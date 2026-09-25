@@ -72,7 +72,7 @@ This project uses **Entity Framework Core** configured with **PostgreSQL**.
 
 ### 1. Connection String Setup
 
-Configure your PostgreSQL connection parameters inside `appsettings.Development.json`:
+Configure your PostgreSQL connection parameters inside `appsettings.json` (or `appsettings.Development.json`):
 
 ```json
 {
