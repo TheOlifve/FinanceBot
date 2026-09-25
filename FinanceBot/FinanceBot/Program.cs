@@ -1,3 +1,7 @@
+using FinanceBot.Data;
+using FinanceBot.Options;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -5,6 +9,12 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+
+builder.Services.Configure<TelegramOptions>(builder.Configuration.GetSection(TelegramOptions.SectionName));
+
+builder.Services.AddDbContext<AppDbContext>(
+    options => options.UseNpgsql(builder.Configuration.GetConnectionString("Default")));
+
 
 var app = builder.Build();
 
