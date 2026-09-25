@@ -77,7 +77,7 @@ Configure your PostgreSQL connection parameters inside `appsettings.json` (or `a
 ```json
 {
   "ConnectionStrings": {
-    "DefaultConnection": "Host=localhost;Port=5432;Database=wishlist_db;Username=postgres;Password=postgres"
+    "DefaultConnection": "Host=localhost;Port=5432;Database=finance_db;Username=postgres;Password=postgres"
   },
   "Telegram": {
     "BotToken": "YOUR_TELEGRAM_BOT_TOKEN_HERE"
