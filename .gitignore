@@ -402,4 +402,14 @@ FodyWeavers.xsd
 # JetBrains Rider
 *.sln.iml
 
+# App secrets / local config
+appsettings.Development.json
+appsettings.*.json
+!appsettings.json
+
+# SQLite database files
+*.db
+*.db-shm
+*.db-wal
+
 # End of https://www.toptal.com/developers/gitignore/api/csharp
