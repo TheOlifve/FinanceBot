@@ -72,12 +72,12 @@ This project uses **Entity Framework Core** configured with **PostgreSQL**.
 
 ### 1. Connection String Setup
 
-Configure your PostgreSQL connection parameters inside `appsettings.json` (or `appsettings.Development.json`):
+Configure your PostgreSQL connection parameters inside `appsettings.Development.json`:
 
 ```json
 {
   "ConnectionStrings": {
-    "DefaultConnection": "Host=localhost;Port=5432;Database=wishlist_db;Username=postgres;Password=postgres"
+    "DefaultConnection": "Host=localhost;Port=5432;Database=finance_db;Username=postgres;Password=postgres"
   },
   "Telegram": {
     "BotToken": "YOUR_TELEGRAM_BOT_TOKEN_HERE"
