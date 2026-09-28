@@ -9,9 +9,9 @@ public class ParsedSpending
     public string? Description { get; set; }
 }
 
-public static class SpendingParser
+public class SpendingParser: ISpendingParser
 {
-    public const string FormatHint = "Format: <amount> <category> [note], e.g. 4.50 coffee";
+    private const string FormatHint = "Format: <amount> <category> [note], e.g. 4.50 coffee";
 
     public static ParsedSpending Parse(string input)
     {

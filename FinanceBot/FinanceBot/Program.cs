@@ -16,6 +16,10 @@ builder.Services.Configure<TelegramOptions>(builder.Configuration.GetSection(Tel
 builder.Services.AddDbContext<AppDbContext>(
     options => options.UseNpgsql(builder.Configuration.GetConnectionString("Default")));
 
+builder.Services.AddScoped<ISpendingRepository, SpendingRepository>();
+
+builder.Services.AddSingleton<ISpendingParser, SpendingParser>();
+
 
 var app = builder.Build();
 
