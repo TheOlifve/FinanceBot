@@ -1,5 +1,6 @@
 using FinanceBot.Data;
 using FinanceBot.Options;
+using FinanceBot.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
