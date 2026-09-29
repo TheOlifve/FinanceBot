@@ -24,7 +24,6 @@ builder.Services.AddScoped<ISpendingRepository, SpendingRepository>();
 
 builder.Services.AddKeyedScoped<ITelegramCommand, CommandStart>("/start");
 
-builder.Services.AddSingleton<CommandHandler>();
 builder.Services.AddSingleton<ISpendingParser, SpendingParser>();
 builder.Services.AddSingleton<ITelegramBotClient> (new TelegramBotClient(builder.Configuration["Telegram:BotToken"]!));
 
