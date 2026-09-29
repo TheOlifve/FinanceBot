@@ -10,6 +10,7 @@ public class Chat
     public DateTime StartedDate { get; set; }
     public ICollection<Spending> Spendings { get; set; } = new List<Spending>();
 
+    public Chat() { }
     public Chat(ChatCreationDTO chatDTO)
     {
         TelegramChatId = chatDTO.TelegramChatId;

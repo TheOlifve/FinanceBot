@@ -29,4 +29,23 @@ public class SpendingRepository: ISpendingRepository
         
         return  chat;
     }
+
+    public async Task<Chat?> GetChat(long chatId, CancellationToken ct)
+    {
+        return await _dbContext.Chats.FirstOrDefaultAsync(c => c.TelegramChatId == chatId, ct);
+    }
+
+    public async Task<ICollection<Spending>> GetTodaySpendings(Chat chat, CancellationToken ct)
+    {
+        DateTime today = DateTime.UtcNow.Date;
+        DateTime tomorrow = today.AddDays(1);
+        
+        return await _dbContext.Spendings.Where(s => s.ChatId == chat.Id && 
+                                                     s.SpentAt >= today && s.SpentAt < tomorrow).ToListAsync(ct);
+    }
+
+    // public async Task<Spending?> CreateSpending(long chatId, CancellationToken ct)
+    // {
+    //     
+    // }
 }

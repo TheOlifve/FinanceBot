@@ -23,6 +23,7 @@ builder.Services.AddDbContext<AppDbContext>(
 builder.Services.AddScoped<ISpendingRepository, SpendingRepository>();
 
 builder.Services.AddKeyedScoped<ITelegramCommand, CommandStart>("/start");
+builder.Services.AddKeyedScoped<ITelegramCommand, CommandToday>("/today");
 
 builder.Services.AddSingleton<ISpendingParser, SpendingParser>();
 builder.Services.AddSingleton<ITelegramBotClient> (new TelegramBotClient(builder.Configuration["Telegram:BotToken"]!));

@@ -49,13 +49,13 @@ public class TelegramPollingWorker : BackgroundService
         {
             if (update.Message?.Text is null)
                 return;
-
+            
             if (update.Message.Text.StartsWith("/"))
             {
                 var handler = scope.
                     ServiceProvider.
-                    GetRequiredService<ITelegramCommand>();
-
+                    GetRequiredKeyedService<ITelegramCommand>(update.Message.Text);
+                
                 await handler.Execute(new RecivedMessageInfo(update), cancellationToken);
             }
             else
