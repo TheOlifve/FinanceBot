@@ -2,6 +2,7 @@ using FinanceBot.Data;
 using FinanceBot.Options;
 using FinanceBot.Services;
 using Microsoft.EntityFrameworkCore;
+using Telegram.Bot;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,6 +20,10 @@ builder.Services.AddDbContext<AppDbContext>(
 builder.Services.AddScoped<ISpendingRepository, SpendingRepository>();
 
 builder.Services.AddSingleton<ISpendingParser, SpendingParser>();
+
+builder.Services.AddSingleton<ITelegramBotClient> (new TelegramBotClient(builder.Configuration["Telegram:BotToken"]!));
+
+builder.Services.AddHostedService<TelegramPollingWorker>();
 
 
 var app = builder.Build();
