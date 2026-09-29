@@ -5,5 +5,5 @@ namespace FinanceBot.Services;
 
 public interface ISpendingRepository
 {
-    public Task<Chat> GetOrCreateChat(ChatCreationDTO spending, CancellationToken ct);
+    public Task<Chat> GetOrCreateChat(ChatCreationDTO chatInfo, CancellationToken ct);
 }

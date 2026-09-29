@@ -1,4 +1,7 @@
+using System.Windows.Input;
+using FinanceBot.Commands;
 using FinanceBot.Data;
+using FinanceBot.Exceptions;
 using FinanceBot.Options;
 using FinanceBot.Services;
 using Microsoft.EntityFrameworkCore;
@@ -19,11 +22,14 @@ builder.Services.AddDbContext<AppDbContext>(
 
 builder.Services.AddScoped<ISpendingRepository, SpendingRepository>();
 
-builder.Services.AddSingleton<ISpendingParser, SpendingParser>();
+builder.Services.AddKeyedScoped<ITelegramCommand, CommandStart>("/start");
 
+builder.Services.AddSingleton<CommandHandler>();
+builder.Services.AddSingleton<ISpendingParser, SpendingParser>();
 builder.Services.AddSingleton<ITelegramBotClient> (new TelegramBotClient(builder.Configuration["Telegram:BotToken"]!));
 
 builder.Services.AddHostedService<TelegramPollingWorker>();
+
 
 
 var app = builder.Build();

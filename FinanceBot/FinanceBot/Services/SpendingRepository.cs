@@ -29,5 +29,4 @@ public class SpendingRepository: ISpendingRepository
         
         return  chat;
     }
-    
 }

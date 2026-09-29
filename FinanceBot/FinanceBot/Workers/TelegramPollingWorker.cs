@@ -1,4 +1,6 @@
+using FinanceBot.Commands;
 using FinanceBot.Exceptions;
+using FinanceBot.Models;
 using FinanceBot.Services;
 using Telegram.Bot;
 using Telegram.Bot.Polling;
@@ -8,12 +10,12 @@ using Telegram.Bot.Types.Enums;
 public class TelegramPollingWorker : BackgroundService
 {
     private readonly ITelegramBotClient _bot;
-    private readonly ISpendingParser    _spendingParser;
+    private readonly IServiceScopeFactory _scopeFactory;
 
-    public TelegramPollingWorker(ITelegramBotClient bot, ISpendingParser spendingParser)
+    public TelegramPollingWorker(ITelegramBotClient bot, IServiceScopeFactory scopeFactory)
     {
         _bot = bot;
-        _spendingParser = spendingParser;
+        _scopeFactory = scopeFactory;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -41,12 +43,28 @@ public class TelegramPollingWorker : BackgroundService
         Update update,
         CancellationToken cancellationToken)
     {
+        await using var scope = _scopeFactory.CreateAsyncScope();
+        
         try
         {
-            if (update.Message?.Text is not null)
+            if (update.Message?.Text is null)
+                return;
+
+            if (update.Message.Text.StartsWith("/"))
             {
-                await _spendingParser.Parse(update.Message.Text);
+                var handler = scope.
+                    ServiceProvider.
+                    GetRequiredService<ITelegramCommand>();
+
+                await handler.Execute(new RecivedMessageInfo(update), cancellationToken);
             }
+            else
+            {
+                var parser = scope.ServiceProvider.GetRequiredService<ISpendingParser>();
+                
+                await parser.Parse(update.Message.Text);
+            }
+            
         }
         catch (ParserException exception)
         {
