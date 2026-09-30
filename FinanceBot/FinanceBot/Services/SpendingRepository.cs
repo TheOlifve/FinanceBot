@@ -30,7 +30,12 @@ public class SpendingRepository: ISpendingRepository
         return  chat;
     }
 
-    public async Task<Chat?> GetChat(long chatId, CancellationToken ct)
+    public async Task<Chat?> GetChat(long telegramChatId, CancellationToken ct)
+    {
+        return await _dbContext.Chats.FirstOrDefaultAsync(c => c.TelegramChatId == telegramChatId, ct);
+    }
+    
+    public async Task<Chat?> GetChat(int chatId, CancellationToken ct)
     {
         return await _dbContext.Chats.FirstOrDefaultAsync(c => c.TelegramChatId == chatId, ct);
     }
@@ -44,8 +49,15 @@ public class SpendingRepository: ISpendingRepository
                                                      s.SpentAt >= today && s.SpentAt < tomorrow).ToListAsync(ct);
     }
 
-    // public async Task<Spending?> CreateSpending(long chatId, CancellationToken ct)
-    // {
-    //     
-    // }
+    public async Task<Spending?> CreateSpending(SpendingCreationDTO spendingInfo, CancellationToken ct)
+    {
+        Spending newSpending = new Spending(spendingInfo);
+        
+        
+        Console.WriteLine($"Spending.ChatId = {newSpending.ChatId}");
+        _dbContext.Spendings.Add(newSpending);
+        await _dbContext.SaveChangesAsync(ct);
+        
+        return newSpending;
+    }
 }

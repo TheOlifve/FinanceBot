@@ -1,4 +1,5 @@
 using FinanceBot.Commands;
+using FinanceBot.DTO;
 using FinanceBot.Exceptions;
 using FinanceBot.Models;
 using FinanceBot.Services;
@@ -62,14 +63,21 @@ public class TelegramPollingWorker : BackgroundService
             {
                 var parser = scope.ServiceProvider.GetRequiredService<ISpendingParser>();
                 
-                await parser.Parse(update.Message.Text);
+                var parsedSpending = await parser.Parse(update.Message.Text);
+                
+                var repo = scope.ServiceProvider.GetRequiredService<ISpendingRepository>();
+
+                var chat = await repo.GetChat(update.Message.Chat.Id, cancellationToken);
+                
+                await repo.CreateSpending(new SpendingCreationDTO(
+                        chat.Id, update.Message.Date, parsedSpending), 
+                        cancellationToken);
+                
             }
-            
         }
         catch (ParserException exception)
         {
             Console.WriteLine(exception.Message);
-            await _bot.SendMessage(update.Message!.Chat.Id, exception.Message);
         }
 
         await Task.CompletedTask;
