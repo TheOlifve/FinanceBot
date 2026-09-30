@@ -1,59 +1,39 @@
-﻿using System.Text.RegularExpressions;
+using FinanceBot.Exceptions;
+using FinanceBot.Options;
 
 namespace FinanceBot.Services;
 
 public class ParsedSpending
 {
     public decimal Amount { get; set; }
-    public string Category { get; set; } = string.Empty;
-    public string? Note { get; set; }
+    public string Title { get; set; } = "";
+    public string? Description { get; set; }
 }
 
-public static class SpendingParser
+public class SpendingParser: ISpendingParser
 {
-    private static readonly Regex CategoryRegex = new(@"^[a-zA-Z]+$", RegexOptions.Compiled);
+    private const string FormatHint = "Format: <amount> <category> [note], e.g. 4.50 coffee";
 
-    public static bool TryParse(string input, out ParsedSpending? result, out string? errorMessage)
+    public async Task<ParsedSpending> Parse(string input)
     {
-        result = null;
-        errorMessage = null;
+        string[] tokens = input.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        
+        if (tokens.Length < 2)
+            throw new InvalidArgumentsException($"Invalid number of parameters {input.Length}. Should be at least 2. {FormatHint}");
 
-        if (string.IsNullOrWhiteSpace(input))
-        {
-            errorMessage = "Format: <amount> <category> [note...]";
-            return false;
-        }
+        ParsedSpending result = new ParsedSpending();
+        
+        if (!decimal.TryParse(tokens[0].Replace('.', ','), out decimal resultAmount))
+            throw new InvalidAmountException($"Amount must be a number and come first. {FormatHint}");
+        if (resultAmount <= 0)
+            throw new InvalidAmountException($"Amount must be greater than zero. {FormatHint}");
+        
+        string description = string.Join(" ", tokens.Skip(2));
 
-        var parts = input.Split(' ', 3, StringSplitOptions.RemoveEmptyEntries);
-        if (parts.Length < 2)
-        {
-            errorMessage = "Format: <amount> <category> [note...]";
-            return false;
-        }
-
-        string rawAmount = parts[0].Replace(',', '.');
-        if (!decimal.TryParse(rawAmount, System.Globalization.CultureInfo.InvariantCulture, out decimal amount) || amount <= 0)
-        {
-            errorMessage = "Amount must be a positive decimal number without currency symbols.";
-            return false;
-        }
-
-        string category = parts[1].ToLowerInvariant();
-        if (!CategoryRegex.IsMatch(category))
-        {
-            errorMessage = "Category must be one word containing only letters.";
-            return false;
-        }
-
-        string? note = parts.Length > 2 ? parts[2].Trim() : null;
-
-        result = new ParsedSpending
-        {
-            Amount = amount,
-            Category = category,
-            Note = note
-        };
-
-        return true;
+        result.Amount = resultAmount;
+        result.Title = tokens[1].ToLowerInvariant();
+        result.Description = description.Length > 0 ? description : null; 
+        
+        return result;
     }
 }

@@ -21,11 +21,9 @@ public class AppDbContext: DbContext
             HasIndex(c => c.TelegramChatId).
             IsUnique();
         
-        Console.WriteLine("=== ENTITIES ===");
-
-        foreach (var entity in modelBuilder.Model.GetEntityTypes())
-        {
-            Console.WriteLine(entity.Name);
-        }
+        modelBuilder.Entity<Spending>().
+            HasOne(s => s.Chat).
+            WithMany(c => c.Spendings).
+            OnDelete(DeleteBehavior.Cascade);
     }
 }
