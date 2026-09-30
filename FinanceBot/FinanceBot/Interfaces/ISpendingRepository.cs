@@ -11,5 +11,6 @@ public interface ISpendingRepository
     public Task<ICollection<Spending>> GetTodaySpendings(Chat chat, CancellationToken ct);
     public Task<Chat?> GetChat(int chatId, CancellationToken ct);
     public Task<Chat?> GetChat(long telegramChatId, CancellationToken ct);
+    public Task<ICollection<Chat>> GetChats(CancellationToken ct);
     public Task<Spending?> CreateSpending(SpendingCreationDTO spendingInfo, CancellationToken ct);
 }

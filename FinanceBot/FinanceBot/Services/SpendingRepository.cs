@@ -40,6 +40,11 @@ public class SpendingRepository: ISpendingRepository
         return await _dbContext.Chats.FirstOrDefaultAsync(c => c.TelegramChatId == chatId, ct);
     }
 
+    public async Task<ICollection<Chat>> GetChats(CancellationToken ct)
+    {
+        return await _dbContext.Chats.ToListAsync(ct);
+    }
+
     public async Task<ICollection<Spending>> GetTodaySpendings(Chat chat, CancellationToken ct)
     {
         DateTime today = DateTime.UtcNow.Date;
