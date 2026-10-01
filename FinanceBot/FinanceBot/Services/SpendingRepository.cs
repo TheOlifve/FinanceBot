@@ -40,13 +40,19 @@ public class SpendingRepository: ISpendingRepository
         return await _dbContext.Chats.FirstOrDefaultAsync(c => c.TelegramChatId == chatId, ct);
     }
 
+    public async Task<ICollection<Chat>> GetChats(CancellationToken ct)
+    {
+        return await _dbContext.Chats.Include(c => c.Spendings).ToListAsync(ct);
+    }
+
     public async Task<ICollection<Spending>> GetTodaySpendings(Chat chat, CancellationToken ct)
     {
         DateTime today = DateTime.UtcNow.Date;
         DateTime tomorrow = today.AddDays(1);
         
-        return await _dbContext.Spendings.Where(s => s.ChatId == chat.Id && 
-                                                     s.SpentAt >= today && s.SpentAt < tomorrow).ToListAsync(ct);
+        return await _dbContext.Spendings.
+            Where(s => s.ChatId == chat.Id && s.SpentAt >= today && s.SpentAt < tomorrow).
+            ToListAsync(ct);
     }
 
     public async Task<ICollection<Spending>> GetMonthSpendings(Chat chat, DateTime fromUtc, CancellationToken ct)
@@ -67,5 +73,24 @@ public class SpendingRepository: ISpendingRepository
         await _dbContext.SaveChangesAsync(ct);
         
         return newSpending;
+    }
+
+    public async Task<ICollection<Spending>> GetSpendingsForMonth(int chadId, CancellationToken ct)
+    {
+        DateTime nowUtc = DateTime.UtcNow.Date;
+        DateTime thisMonth = new DateTime(nowUtc.Year, nowUtc.Month,1, 0, 0, 0, DateTimeKind.Utc);
+
+        return await _dbContext.Spendings.
+            Where(s => s.ChatId == chadId && s.SpentAt >= thisMonth).
+            ToListAsync(ct);
+    }
+
+    public async Task<ICollection<Spending>> GetSpendingsForTwoWeeks(int chadId, CancellationToken ct)
+    {
+        DateTime lastTwoWeeks = DateTime.UtcNow.Date.AddDays(-14);
+
+        return await _dbContext.Spendings.
+            Where(s => s.ChatId == chadId && s.SpentAt >= lastTwoWeeks).
+            ToListAsync(ct);
     }
 }

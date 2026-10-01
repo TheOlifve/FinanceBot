@@ -35,7 +35,7 @@ public class TelegramPollingWorker : BackgroundService
         var me = await _bot.GetMe(stoppingToken);
 
         Console.WriteLine($"Bot @{me.Username} started");
-
+        
         await Task.Delay(Timeout.Infinite, stoppingToken);
     }
 

@@ -12,5 +12,8 @@ public interface ISpendingRepository
     public Task<ICollection<Spending>> GetMonthSpendings(Chat chat, DateTime fromUtc, CancellationToken ct);
     public Task<Chat?> GetChat(int chatId, CancellationToken ct);
     public Task<Chat?> GetChat(long telegramChatId, CancellationToken ct);
+    public Task<ICollection<Chat>> GetChats(CancellationToken ct);
     public Task<Spending?> CreateSpending(SpendingCreationDTO spendingInfo, CancellationToken ct);
+    public Task<ICollection<Spending>> GetSpendingsForMonth(int chadId, CancellationToken ct);
+    public Task<ICollection<Spending>> GetSpendingsForTwoWeeks(int chadId, CancellationToken ct);
 }

@@ -4,6 +4,7 @@ using FinanceBot.Data;
 using FinanceBot.Exceptions;
 using FinanceBot.Options;
 using FinanceBot.Services;
+using FinanceBot.Workers;
 using Microsoft.EntityFrameworkCore;
 using Telegram.Bot;
 using Telegram.Bot.Types.Enums;
@@ -27,12 +28,12 @@ builder.Services.AddKeyedScoped<ITelegramCommand, CommandStart>("/start");
 builder.Services.AddKeyedScoped<ITelegramCommand, CommandToday>("/today");
 builder.Services.AddKeyedScoped<ITelegramCommand, CommandMonth>("/month");
 
+builder.Services.AddSingleton<TelegramOptions>();
+builder.Services.AddSingleton<ReportBuilder>();
 builder.Services.AddSingleton<ISpendingParser, SpendingParser>();
 builder.Services.AddSingleton<ITelegramBotClient> (new TelegramBotClient(builder.Configuration["Telegram:BotToken"]!));
 
 //builder.Services.AddHostedService<TelegramPollingWorker>();
-
-
 
 var app = builder.Build();
 
