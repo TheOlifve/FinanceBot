@@ -11,7 +11,7 @@ public class ReportBuilder
         _scopeFactory = scopeFactory;
     }
     
-    private async Task<Report> CreateReport(Chat chat, CancellationToken ct)
+    public async Task<Report> CreateReport(Chat chat, CancellationToken ct)
     {
         using IServiceScope scope = _scopeFactory.CreateScope();
         

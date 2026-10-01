@@ -2,7 +2,7 @@ namespace FinanceBot.Models;
 
 public class Report
 {
-    public int ThisMonthEntries { get; set; }
+    public int LastMonthEntries { get; set; }
     public string Link {get; set;}
     public decimal LastWeekTotal {get; set;}
     public decimal PreviousWeekTotal {get; set;}
@@ -10,12 +10,12 @@ public class Report
     public decimal TypicalDayThisMonth {get; set;}
     public Dictionary<string, decimal> CategoryTotal {get; set;}
 
-    public Report(int thisMonthEntries, string link, 
+    public Report(int lastMonthEntries, string link, 
         decimal lastWeekTotal, decimal previousWeekTotal,
         decimal lastMonthTotal, decimal typicalDayThisMonth,
         Dictionary<string, decimal> categoryTotal)
     {
-        ThisMonthEntries = thisMonthEntries;
+        LastMonthEntries = lastMonthEntries;
         Link = link;
         LastWeekTotal = lastWeekTotal;
         PreviousWeekTotal = previousWeekTotal;

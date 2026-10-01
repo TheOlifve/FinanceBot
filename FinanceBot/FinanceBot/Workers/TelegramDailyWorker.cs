@@ -20,7 +20,26 @@ public class TelegramDailyWorker: BackgroundService
         return nextUpdate <  nowUtc ? nextUpdate.AddDays(1) : nextUpdate;
     }
     
-    public TelegramDailyWorker(TelegramOptions options, ITelegramBotClient bot, ReportBuilder reportBuilder, IServiceScopeFactory scopeFactory)
+    private string FormatDailyReport(Report report, string reportToken)
+    {
+        var topCategoriesText = report.CategoryTotal.Count == 0
+            ? "—"
+            : string.Join(", ", report.CategoryTotal.Select(c => $"{c.Key}: {c.Value:F2}"));
+
+        return
+            $"""
+             📅 This month: {report.LastMonthTotal:F2} {_options.Currency} ({report.LastMonthEntries} entries)
+             📆 Last 7 days: {report.LastWeekTotal:F2} {_options.Currency}
+             📆 Previous 7 days: {report.PreviousWeekTotal:F2} {_options.Currency}
+             📊 Typical day: {report.TypicalDayThisMonth:F2} {_options.Currency}
+             🏆 Top categories: {topCategoriesText}
+
+             🔗 Full report: .../report/{reportToken}
+             """;
+    }
+    
+    public TelegramDailyWorker(TelegramOptions options, ITelegramBotClient bot,
+        ReportBuilder reportBuilder, IServiceScopeFactory scopeFactory)
     {
         _options = options;
         _bot = bot;
@@ -28,26 +47,13 @@ public class TelegramDailyWorker: BackgroundService
         _scopeFactory = scopeFactory;
     }
     
-    private async Task<string> CreateDailyMessage(IServiceScope scope, Chat chat, CancellationToken ct)
-    {
-        ISpendingRepository repo =  scope.ServiceProvider.GetRequiredService<ISpendingRepository>();
-        ICollection<Spending> spendings = await repo.GetSpendingsForMonth(chat.Id, ct);
-
-        int entries = 0;
-        foreach (var spending in spendings)
-        {
-            entries++;
-        }
-        return "";
-    }
-
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         while (!stoppingToken.IsCancellationRequested)
         {
             var nextUpdate = await GetNextUpdateTime();
             
-            await Task.Delay(nextUpdate - DateTime.UtcNow, stoppingToken);
+            // await Task.Delay(nextUpdate - DateTime.UtcNow, stoppingToken);
             
             await using var scope = _scopeFactory.CreateAsyncScope();
             
@@ -57,8 +63,15 @@ public class TelegramDailyWorker: BackgroundService
 
             foreach (var chat in chats)
             {
+
                 if (chat.Spendings.Any())
-                    await _bot.SendMessage(chat.TelegramChatId, await CreateDailyMessage(scope, chat, stoppingToken));
+                {
+                    Report report = await _reportBuilder.CreateReport(chat, stoppingToken);
+                    
+                    await _bot.SendMessage(chat.TelegramChatId,
+                        FormatDailyReport(report, ""));
+                }
+                
                 Console.WriteLine("Daily update: " + chat.TelegramChatId);
             }
         }
