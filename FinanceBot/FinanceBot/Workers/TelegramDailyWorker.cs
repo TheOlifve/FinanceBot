@@ -53,7 +53,7 @@ public class TelegramDailyWorker: BackgroundService
         {
             var nextUpdate = await GetNextUpdateTime();
             
-            // await Task.Delay(nextUpdate - DateTime.UtcNow, stoppingToken);
+            await Task.Delay(nextUpdate - DateTime.UtcNow, stoppingToken);
             
             await using var scope = _scopeFactory.CreateAsyncScope();
             
