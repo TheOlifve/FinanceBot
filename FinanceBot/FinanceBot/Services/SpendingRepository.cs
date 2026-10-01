@@ -49,6 +49,14 @@ public class SpendingRepository: ISpendingRepository
                                                      s.SpentAt >= today && s.SpentAt < tomorrow).ToListAsync(ct);
     }
 
+    public async Task<ICollection<Spending>> GetMonthSpendings(Chat chat, DateTime fromUtc, CancellationToken ct)
+    {
+        return await _dbContext.Spendings
+            .Where(s => s.ChatId == chat.Id && s.SpentAt >= fromUtc)
+            .OrderByDescending(s => s.SpentAt)
+            .ToListAsync(ct);
+    }
+
     public async Task<Spending?> CreateSpending(SpendingCreationDTO spendingInfo, CancellationToken ct)
     {
         Spending newSpending = new Spending(spendingInfo);

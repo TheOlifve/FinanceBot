@@ -62,17 +62,28 @@ public class TelegramPollingWorker : BackgroundService
             else
             {
                 var parser = scope.ServiceProvider.GetRequiredService<ISpendingParser>();
-                
+
                 var parsedSpending = await parser.Parse(update.Message.Text);
-                
+
                 var repo = scope.ServiceProvider.GetRequiredService<ISpendingRepository>();
 
                 var chat = await repo.GetChat(update.Message.Chat.Id, cancellationToken);
-                
-                await repo.CreateSpending(new SpendingCreationDTO(
-                        chat.Id, update.Message.Date, parsedSpending), 
-                        cancellationToken);
-                
+
+                var spending = await repo.CreateSpending(
+                    new SpendingCreationDTO(chat.Id, update.Message.Date, parsedSpending),
+                    cancellationToken);
+
+                if (spending != null)
+                {
+                    string noteText = string.IsNullOrEmpty(spending.Notes) ? "" : $" ({spending.Notes})";
+                    string replyText = $"Saved: {spending.SpentAmount:F2} {spending.Category}{noteText}";
+
+                    await bot.SendMessage(
+                        chatId: update.Message.Chat.Id,
+                        text: replyText,
+                        cancellationToken: cancellationToken);
+                }
+
             }
         }
         catch (ParserException exception)
